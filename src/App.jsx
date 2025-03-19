@@ -6,6 +6,7 @@ import Service from './services/Service'
 
 import LocationList from './components/LocationList';
 import Sidebar from './components/Sidebar';
+import LocationForm from './components/LocationForm';
 
 const initialLocations = [
     { id: 1, name: 'The Eiffel Tower', dateVisited: '2025-08-10', rating: 5 },
@@ -37,10 +38,6 @@ function App() {
         setSelectedLocationIds([]);
     };
 
-    const handleInputChange = (e) => {
-        const value = e.target.name === 'rating' ? parseInt(e.target.value, 10) : e.target.value;
-        setNewLocation({ ...newLocation, [e.target.name]: value });
-    };
 
     const handleAddLocation = (e) => {
         e.preventDefault();
@@ -50,10 +47,6 @@ function App() {
         setData(serv.getAll());
     };
 
-    const handleCancelClick = () => {
-        setNewLocation({ name: '', dateVisited: '', rating: 0 });
-        setCurrentPage('list');
-    };
 
     const handleUpdateLocation = (e) => {
         e.preventDefault();
@@ -94,56 +87,20 @@ function App() {
                 </>
             )}
             {currentPage === 'add' && (
-                <form onSubmit={handleAddLocation}>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Name"
-                        value={newLocation.name}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type="date"
-                        name="dateVisited"
-                        value={newLocation.dateVisited}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type="number"
-                        name="rating"
-                        placeholder="Rating"
-                        value={newLocation.rating}
-                        onChange={handleInputChange}
-                    />
-                    <button type="submit">Save</button>
-                    <button type="button" onClick={handleCancelClick}>Cancel</button>
-                </form>
+                <LocationForm 
+                    submitHandler={handleAddLocation}
+                    newLocation={newLocation}
+                    setNewLocation={setNewLocation}
+                    setCurrentPage={setCurrentPage}
+                />
             )}
             {currentPage === 'update' && (
-                <form onSubmit={handleUpdateLocation}>
-                    <input
-                        type="text"
-                        name="name"
-                        placeholder="Name"
-                        value={newLocation.name}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type="date"
-                        name="dateVisited"
-                        value={newLocation.dateVisited}
-                        onChange={handleInputChange}
-                    />
-                    <input
-                        type="number"
-                        name="rating"
-                        placeholder="Rating"
-                        value={newLocation.rating}
-                        onChange={handleInputChange}
-                    />
-                    <button type="submit">Update</button>
-                    <button type="button" onClick={handleCancelClick}>Cancel</button>
-                </form>
+                <LocationForm 
+                submitHandler={handleUpdateLocation}
+                newLocation={newLocation}
+                setNewLocation={setNewLocation}
+                setCurrentPage={setCurrentPage}
+                />
             )}
         </>
     );
