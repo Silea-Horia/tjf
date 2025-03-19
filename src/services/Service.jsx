@@ -18,7 +18,7 @@ class Service {
     }
 
     isValidRating(rating) {
-        return Number.isInteger(rating);
+        return Number.isInteger(rating) && 0 <= rating && rating <= 5;
     }
 
     isValidDate(dateVisited) {
@@ -40,7 +40,7 @@ class Service {
     }
 
     update(id, newName, newDateVisited, newRating) {
-        if(!this.validParameters) return null;
+        if(!this.validParameters(newDateVisited, newRating)) return null;
         return this.repo.update(id, newName, newDateVisited, newRating);
     }
 
@@ -64,7 +64,3 @@ class Service {
 };
 
 export default Service;
-
-// module.exports = {
-//     Service
-//   };

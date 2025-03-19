@@ -28,12 +28,16 @@ describe('Service', () => {
         expect(serv.getAll()).toHaveLength(3);
     });
 
-    it('should not accept invalid rating', () => {
-        const createdLocation = serv.create(newLocation.name, newLocation.dateVisited, "a");
+    it('should not accept invalid rating for creation', () => {
+        let createdLocation = serv.create(newLocation.name, newLocation.dateVisited, "a");
+        expect(createdLocation).toEqual(null);
+        createdLocation = serv.create(newLocation.name, newLocation.dateVisited, -1);
+        expect(createdLocation).toEqual(null);
+        createdLocation = serv.create(newLocation.name, newLocation.dateVisited, 6);
         expect(createdLocation).toEqual(null);
     })
 
-    it('should not accept invalid date', () => {
+    it('should not accept invalid date for creation', () => {
         let createdLocation = serv.create(newLocation.name, "2025-13-01", newLocation.rating);
         expect(createdLocation).toEqual(null);
         createdLocation = serv.create(newLocation.name, "202512--01", newLocation.rating);
@@ -51,6 +55,13 @@ describe('Service', () => {
         expect(result).toEqual({ ...updatedLocation, id: 2 });
         expect(serv.read(2)).toEqual({ ...updatedLocation, id: 2 });
     });
+
+    it('should not accept invalid rating for updating', () => {
+        const updatedLocation = { name: 'Updated Sibiu', dateVisited: '2005-01-14', rating: 6 };
+        const result = serv.update(2, updatedLocation.name, updatedLocation.dateVisited, updatedLocation.rating);
+        expect(result).toEqual(null);
+        expect(serv.read(2)).toEqual(initialLocations[1]);
+    })
 
     it('should delete a location', () => {
         const result = serv.delete(1);
