@@ -12,10 +12,14 @@ const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, sel
 
     const handleUpdateClick = () => {
         if (selectedLocationIds.length === 1) {
-            setNewLocation(data.filter(location => location.id === selectedLocationIds[0])[0]);
+            setNewLocation(serv.getAll().filter(location => location.id === selectedLocationIds[0])[0]);
+            setCurrentPage('update');
         }
-        setCurrentPage('update');
     };
+
+    const isUpdateDisabled = selectedLocationIds.length !== 1;
+    
+    const isDeleteDisabled = selectedLocationIds.length < 1;
 
     return (
         <div className="main-content">
@@ -25,8 +29,8 @@ const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, sel
                 setSelectedLocationIds={setSelectedLocationIds}
             />
             <button type="button" onClick={() => setCurrentPage('add')}>Add</button>
-            <button type="button" onClick={removeElements}>Remove</button>
-            <button type="button" onClick={() => handleUpdateClick()}>Update</button>
+            <button type="button" onClick={removeElements} disabled={isDeleteDisabled}>Remove</button>
+            <button type="button" onClick={() => handleUpdateClick()} disabled={isUpdateDisabled}>Update</button>
         </div>
     )
 }
