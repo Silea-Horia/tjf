@@ -5,6 +5,7 @@ import Repository from './repo/Repository'
 import Service from './services/Service'
 
 import LocationList from './components/LocationList';
+import Sidebar from './components/Sidebar';
 
 const initialLocations = [
     { id: 1, name: 'The Eiffel Tower', dateVisited: '2025-08-10', rating: 5 },
@@ -21,25 +22,12 @@ function App() {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedRatings, setSelectedRatings] = useState([]);
     const [selectedLocationIds, setSelectedLocationIds] = useState([]);
-    const [dropdownOpen, setDropdownOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState('list');
     const [newLocation, setNewLocation] = useState({
         name: '',
         dateVisited: '',
         rating: 0,
     });
-
-    const toggleDropdown = () => {
-        setDropdownOpen(!dropdownOpen);
-    };
-
-    const handleRatingChange = (rating) => {
-        setSelectedRatings((prevRatings) =>
-            prevRatings.includes(rating)
-                ? prevRatings.filter((r) => r !== rating)
-                : [...prevRatings, rating]
-        );
-    };
 
     const removeElements = () => {
         selectedLocationIds.forEach(locationId => {
@@ -87,37 +75,12 @@ function App() {
         <>
             {currentPage === 'list' && (
                 <>
-                    <div className="sidebar">
-                        <input
-                            type="text"
-                            placeholder="Search"
-                            className="searchbar"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                        <div className="filters">
-                            <div className="dropdown">
-                                <button onClick={toggleDropdown} className="dropdown-button">
-                                    Filter by Rating
-                                </button>
-                                {dropdownOpen && (
-                                    <div className="dropdown-menu">
-                                        {[0, 1, 2, 3, 4, 5].map((rating) => (
-                                            <label key={rating} className="dropdown-item">
-                                                <input
-                                                    type="checkbox"
-                                                    value={rating}
-                                                    checked={selectedRatings.includes(rating)}
-                                                    onChange={() => handleRatingChange(rating)}
-                                                />
-                                                {rating} Stars
-                                            </label>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
+                    <Sidebar 
+                        searchTerm={searchTerm}
+                        setSearchTerm={setSearchTerm}
+                        selectedRatings={selectedRatings}
+                        setSelectedRatings={setSelectedRatings}
+                    />
                     <div className="main-content">
                         <LocationList 
                             locations={serv.filter(searchTerm, selectedRatings)} 

@@ -1,14 +1,13 @@
 import React from 'react'
-
-const handleLocationChange = (location, setSelectedLocationIds) => {
-    setSelectedLocationIds((prevLocations) =>
-        prevLocations.includes(location.id)
-            ? prevLocations.filter((id) => id !== location.id)
-            : [...prevLocations, location.id]
-    );
-};
-
 const LocationList = ({locations, selectedLocationIds, setSelectedLocationIds}) => {
+    const handleLocationChange = (location) => {
+        setSelectedLocationIds((prevLocations) =>
+            prevLocations.includes(location.id)
+                ? prevLocations.filter((id) => id !== location.id)
+                : [...prevLocations, location.id]
+        );
+    };
+
     return (
         <table className="table">
             <tbody>
@@ -17,7 +16,7 @@ const LocationList = ({locations, selectedLocationIds, setSelectedLocationIds}) 
                         <td>
                             <input
                                 type="checkbox"
-                                onChange={() => handleLocationChange(location, setSelectedLocationIds)}
+                                onChange={() => handleLocationChange(location)}
                                 checked={selectedLocationIds.includes(location.id)}
                             />
                         </td>
