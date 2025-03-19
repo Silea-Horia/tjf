@@ -4,19 +4,21 @@ import './App.css';
 import Repository from './repo/Repository'
 import Service from './services/Service'
 
+const initialLocations = [
+    { id: 1, name: 'The Eiffel Tower', dateVisited: '2025-08-10', rating: 5 },
+    { id: 2, name: 'Sibiu', dateVisited: '2004-01-14', rating: 5 },
+];
+
+const repo = new Repository([...initialLocations]);
+const serv = new Service(repo);
+
 function App() {
-    const initialLocations = [
-        { id: 1, name: 'The Eiffel Tower', dateVisited: '2025-08-10', rating: 5 },
-        { id: 2, name: 'Sibiu', dateVisited: '2004-01-14', rating: 5 },
-    ];
-    const repo = new Repository([...initialLocations]);
-    const serv = new Service(repo);
 
     const [data, setData] = useState(serv.getAll());
 
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedRatings, setSelectedRatings] = useState([]);
-    const [selectedLocations, setSelectedLocations] = useState([]);
+    const [selectedLocationIds, setSelectedLocationIds] = useState([]);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [currentPage, setCurrentPage] = useState('list');
     const [newLocation, setNewLocation] = useState({
@@ -38,33 +40,19 @@ function App() {
     };
 
     const handleLocationChange = (location) => {
-        setSelectedLocations((prevLocations) =>
+        setSelectedLocationIds((prevLocations) =>
             prevLocations.includes(location.id)
                 ? prevLocations.filter((id) => id !== location.id)
                 : [...prevLocations, location.id]
         );
     };
 
-    // const filteredData = data.filter((location) => {
-    //     const matchesSearch = location.name.toLowerCase().includes(searchTerm.toLowerCase());
-    //     const matchesRating = selectedRatings.length === 0 || selectedRatings.includes(location.rating);
-    //     return matchesSearch && matchesRating;
-    // });
-
-    const filteredData = serv.filter(searchTerm, selectedRatings);
-
     const removeElements = () => {
-        selectedLocations.forEach(location => {
-          console.log(location.id);
-          serv.delete(location.id);
+        selectedLocationIds.forEach(locationId => {
+          serv.delete(locationId);
         });
         setData(serv.getAll());
-        setSelectedLocations([]);
-        // const filteredLocations = data.filter(
-        //     (location) => !selectedLocations.includes(location.id)
-        // );
-        // setData(filteredLocations);
-        // setSelectedLocations([]);
+        setSelectedLocationIds([]);
     };
 
     const handleInputChange = (e) => {
@@ -74,10 +62,10 @@ function App() {
 
     const handleAddLocation = (e) => {
         e.preventDefault();
-        const newId = data.length > 0 ? Math.max(...data.map((item) => item.id)) + 1 : 1;
-        setData([...data, { ...newLocation, id: newId }]);
+        serv.create(newLocation.name, newLocation.dateVisited, newLocation.rating);
         setNewLocation({ name: '', dateVisited: '', rating: 0 });
         setCurrentPage('list'); 
+        setData(serv.getAll());
     };
 
     const handleCancelClick = () => {
@@ -87,17 +75,16 @@ function App() {
 
     const handleUpdateLocation = (e) => {
         e.preventDefault();
-        const updatedData = data.map((item) =>
-            item.id === selectedLocations[0] ? newLocation : item // Corrected line
-        );
-        setData(updatedData);
+        serv.update(selectedLocationIds[0], newLocation.name, newLocation.dateVisited, newLocation.rating);
         setNewLocation({ name: '', dateVisited: '', rating: 0 });
-        setSelectedLocations([]);
+        setData(serv.getAll());
+        setSelectedLocationIds([]);
         setCurrentPage('list');
     };
+
     const handleUpdateClick = () => {
-        if (selectedLocations.length === 1) {
-            setNewLocation(data.filter(location => location.id === selectedLocations[0])[0]);
+        if (selectedLocationIds.length === 1) {
+            setNewLocation(data.filter(location => location.id === selectedLocationIds[0])[0]);
         }
         setCurrentPage('update');
     };
@@ -146,7 +133,7 @@ function App() {
                                             <input
                                                 type="checkbox"
                                                 onChange={() => handleLocationChange(location)}
-                                                checked={selectedLocations.includes(location.id)}
+                                                checked={selectedLocationIds.includes(location.id)}
                                             />
                                         </td>
                                         <td>{location.name}</td>
