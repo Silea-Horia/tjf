@@ -45,18 +45,26 @@ function App() {
         );
     };
 
-    const filteredData = data.filter((location) => {
-        const matchesSearch = location.name.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesRating = selectedRatings.length === 0 || selectedRatings.includes(location.rating);
-        return matchesSearch && matchesRating;
-    });
+    // const filteredData = data.filter((location) => {
+    //     const matchesSearch = location.name.toLowerCase().includes(searchTerm.toLowerCase());
+    //     const matchesRating = selectedRatings.length === 0 || selectedRatings.includes(location.rating);
+    //     return matchesSearch && matchesRating;
+    // });
+
+    const filteredData = serv.filter(searchTerm, selectedRatings);
 
     const removeElements = () => {
-        const filteredLocations = data.filter(
-            (location) => !selectedLocations.includes(location.id)
-        );
-        setData(filteredLocations);
+        selectedLocations.forEach(location => {
+          console.log(location.id);
+          serv.delete(location.id);
+        });
+        setData(serv.getAll());
         setSelectedLocations([]);
+        // const filteredLocations = data.filter(
+        //     (location) => !selectedLocations.includes(location.id)
+        // );
+        // setData(filteredLocations);
+        // setSelectedLocations([]);
     };
 
     const handleInputChange = (e) => {
@@ -132,7 +140,7 @@ function App() {
                     <div className="main-content">
                         <table className="table">
                             <tbody>
-                                {filteredData.map((location) => (
+                                {serv.filter(searchTerm, selectedRatings).map((location) => (
                                     <tr key={location.id}>
                                         <td>
                                             <input
