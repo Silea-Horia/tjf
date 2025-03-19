@@ -4,6 +4,8 @@ import './App.css';
 import Repository from './repo/Repository'
 import Service from './services/Service'
 
+import LocationList from './components/LocationList';
+
 const initialLocations = [
     { id: 1, name: 'The Eiffel Tower', dateVisited: '2025-08-10', rating: 5 },
     { id: 2, name: 'Sibiu', dateVisited: '2004-01-14', rating: 5 },
@@ -36,14 +38,6 @@ function App() {
             prevRatings.includes(rating)
                 ? prevRatings.filter((r) => r !== rating)
                 : [...prevRatings, rating]
-        );
-    };
-
-    const handleLocationChange = (location) => {
-        setSelectedLocationIds((prevLocations) =>
-            prevLocations.includes(location.id)
-                ? prevLocations.filter((id) => id !== location.id)
-                : [...prevLocations, location.id]
         );
     };
 
@@ -125,24 +119,11 @@ function App() {
                         </div>
                     </div>
                     <div className="main-content">
-                        <table className="table">
-                            <tbody>
-                                {serv.filter(searchTerm, selectedRatings).map((location) => (
-                                    <tr key={location.id}>
-                                        <td>
-                                            <input
-                                                type="checkbox"
-                                                onChange={() => handleLocationChange(location)}
-                                                checked={selectedLocationIds.includes(location.id)}
-                                            />
-                                        </td>
-                                        <td>{location.name}</td>
-                                        <td>{location.dateVisited}</td>
-                                        <td>{location.rating}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                        <LocationList 
+                            locations={serv.filter(searchTerm, selectedRatings)} 
+                            selectedLocationIds={selectedLocationIds} 
+                            setSelectedLocationIds={setSelectedLocationIds}
+                        />
                         <button type="button" onClick={() => setCurrentPage('add')}>Add</button>
                         <button type="button" onClick={removeElements}>Remove</button>
                         <button type="button" onClick={() => handleUpdateClick()}>Update</button>
