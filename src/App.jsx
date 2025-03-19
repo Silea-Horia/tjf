@@ -4,9 +4,9 @@ import './App.css';
 import Repository from './repo/Repository'
 import Service from './services/Service'
 
-import LocationList from './components/LocationList';
 import Sidebar from './components/Sidebar';
 import LocationForm from './components/LocationForm';
+import Master from './components/Master';
 
 const initialLocations = [
     { id: 1, name: 'The Eiffel Tower', dateVisited: '2025-08-10', rating: 5 },
@@ -30,15 +30,6 @@ function App() {
         rating: 0,
     });
 
-    const removeElements = () => {
-        selectedLocationIds.forEach(locationId => {
-          serv.delete(locationId);
-        });
-        setData(serv.getAll());
-        setSelectedLocationIds([]);
-    };
-
-
     const handleAddLocation = (e) => {
         e.preventDefault();
         serv.create(newLocation.name, newLocation.dateVisited, newLocation.rating);
@@ -57,13 +48,6 @@ function App() {
         setCurrentPage('list');
     };
 
-    const handleUpdateClick = () => {
-        if (selectedLocationIds.length === 1) {
-            setNewLocation(data.filter(location => location.id === selectedLocationIds[0])[0]);
-        }
-        setCurrentPage('update');
-    };
-
     return (
         <>
             {currentPage === 'list' && (
@@ -74,16 +58,16 @@ function App() {
                         selectedRatings={selectedRatings}
                         setSelectedRatings={setSelectedRatings}
                     />
-                    <div className="main-content">
-                        <LocationList 
-                            locations={serv.filter(searchTerm, selectedRatings)} 
-                            selectedLocationIds={selectedLocationIds} 
-                            setSelectedLocationIds={setSelectedLocationIds}
-                        />
-                        <button type="button" onClick={() => setCurrentPage('add')}>Add</button>
-                        <button type="button" onClick={removeElements}>Remove</button>
-                        <button type="button" onClick={() => handleUpdateClick()}>Update</button>
-                    </div>
+                    <Master 
+                        serv={serv}
+                        setData={setData}
+                        setNewLocation={setNewLocation}
+                        searchTerm={searchTerm}
+                        selectedRatings={selectedRatings}
+                        selectedLocationIds={selectedLocationIds}
+                        setSelectedLocationIds={setSelectedLocationIds} 
+                        setCurrentPage={setCurrentPage}
+                    />
                 </>
             )}
             {currentPage === 'add' && (
