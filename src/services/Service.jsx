@@ -50,7 +50,7 @@ class Service {
 
     filter(searchTerm, selectedRatings) {
         return this.getAll().filter(location =>
-        this.matchesSearch(location, searchTerm) && this.matchesRating(location, selectedRatings)
+            this.matchesSearch(location, searchTerm) && this.matchesRating(location, selectedRatings)
         );
     }
     

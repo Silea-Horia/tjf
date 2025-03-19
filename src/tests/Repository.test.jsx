@@ -1,5 +1,6 @@
-// import Repository from '../repo/Repository.jsx'; 
-const repository = require('../repo/Repository.jsx');
+import Repository from '../repo/Repository.jsx'; 
+import renderer from 'react-test-renderer';
+// const repository = require('../repo/Repository.jsx');
 
 describe('Repository', () => {
     let repo;
@@ -10,7 +11,7 @@ describe('Repository', () => {
     const newLocation = { name: 'Barcelona', dateVisited: '2024-05-15', rating: 4 };
 
     beforeEach(() => {
-        repo = new repository.Repository([...initialLocations]);
+        repo = new Repository([...initialLocations]);
     });
 
     it('should create a new location', () => {

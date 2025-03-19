@@ -1,6 +1,7 @@
-// import Repository from '../repo/Repository.jsx'; 
-const service = require('../services/Service.jsx');
-const repository = require('../repo/Repository.jsx');
+import Repository from '../repo/Repository.jsx'; 
+import Service from '../services/Service.jsx';
+// const service = require('../services/Service.jsx');
+// const repository = require('../repo/Repository.jsx');
 
 describe('Service', () => {
     let serv;
@@ -12,8 +13,8 @@ describe('Service', () => {
     const newLocation = { name: 'Barcelona', dateVisited: '2024-05-15', rating: 4 };
 
     beforeEach(() => {
-        repo = new repository.Repository([...initialLocations]);
-        serv = new service.Service(repo);
+        repo = new Repository([...initialLocations]);
+        serv = new Service(repo);
     });
 
     it('should get all locations', () => {
@@ -99,7 +100,7 @@ describe('Service', () => {
     });
 
     it('should filter by name and rating', () => {
-        result = serv.filter("S", [5]);
+        let result = serv.filter("S", [5]);
         expect(result).toHaveLength(1);
         result = serv.filter("Sibi", [4]);
         expect(result).toHaveLength(0);
