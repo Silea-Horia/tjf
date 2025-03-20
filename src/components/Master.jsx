@@ -28,10 +28,12 @@ const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, sel
                 selectedLocationIds={selectedLocationIds} 
                 setSelectedLocationIds={setSelectedLocationIds}
             />
-            <button type="button" onClick={() => setCurrentPage('add')}>Add</button>
-            <button type="button" onClick={removeElements} disabled={isDeleteDisabled}>Remove</button>
-            <button type="button" onClick={() => handleUpdateClick()} disabled={isUpdateDisabled}>Update</button>
-        </div>
+            <div className='button-container'>
+                <button className='button' type="button" onClick={() => setCurrentPage('add')}>Add</button>
+                <button className='button' type="button" onClick={removeElements} disabled={isDeleteDisabled}>Remove</button>
+                <button className='button' type="button" onClick={() => handleUpdateClick()} disabled={isUpdateDisabled}>Update</button>
+            </div>
+            </div>
     )
 }
 

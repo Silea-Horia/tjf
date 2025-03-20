@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import './Form.css'
 
 const LocationForm = ({submitHandler, newLocation, setNewLocation, setCurrentPage}) => {
     const handleInputChange = (e) => {
@@ -12,30 +13,33 @@ const LocationForm = ({submitHandler, newLocation, setNewLocation, setCurrentPag
     };
 
     return (
-        <form onSubmit={submitHandler}>
-            <input
-                type="text"
-                name="name"
-                placeholder="Name"
-                value={newLocation.name}
-                onChange={handleInputChange}
-            />
-            <input
-                type="date"
-                name="dateVisited"
-                value={newLocation.dateVisited}
-                onChange={handleInputChange}
-            />
-            <input
-                type="number"
-                name="rating"
-                placeholder="Rating"
-                value={newLocation.rating}
-                onChange={handleInputChange}
-            />
-            <button type="submit">Save</button>
-            <button type="button" onClick={handleCancelClick}>Cancel</button>
-        </form>
+        <div className='form-container'>
+            <form onSubmit={submitHandler}>
+                <h1>Location details</h1>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Name"
+                    value={newLocation.name}
+                    onChange={handleInputChange}
+                />
+                <input
+                    type="date"
+                    name="dateVisited"
+                    value={newLocation.dateVisited}
+                    onChange={handleInputChange}
+                />
+                <input
+                    type="number"
+                    name="rating"
+                    placeholder="Rating"
+                    value={newLocation.rating}
+                    onChange={handleInputChange}
+                />
+                <button className='button' type="submit">Save</button>
+                <button className='button' type="button" onClick={handleCancelClick}>Cancel</button>
+            </form>
+        </div>
     )
 }
 
