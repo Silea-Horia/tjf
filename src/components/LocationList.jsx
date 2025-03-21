@@ -1,5 +1,5 @@
 import React from 'react'
-const LocationList = ({locations, selectedLocationIds, setSelectedLocationIds}) => {
+const LocationList = ({locations, allLocations, selectedLocationIds, setSelectedLocationIds, currentListPage, itemsPerPage}) => {
     const handleLocationChange = (location) => {
         setSelectedLocationIds((prevLocations) =>
             prevLocations.includes(location.id)
@@ -8,13 +8,15 @@ const LocationList = ({locations, selectedLocationIds, setSelectedLocationIds}) 
         );
     };
     
-    const sortedLocations = [...locations].sort((a, b) => b.rating - a.rating);
-    
+    const globalIndex = (index) => {
+        return index + (currentListPage-1) * itemsPerPage;
+    }
+
     const getRowColor = (index) => {
-        const thirdSize = Math.floor(sortedLocations.length / 3);
-        if (index < thirdSize) {
+        const thirdSize = Math.floor(allLocations.length / 3);
+        if (globalIndex(index) < thirdSize) {
         return 'yellow';
-        } else if (index >= 2 * thirdSize) {
+        } else if (globalIndex(index) >= 2 * thirdSize) {
         return 'red';
         } else {
         return 'orange';
@@ -23,8 +25,16 @@ const LocationList = ({locations, selectedLocationIds, setSelectedLocationIds}) 
 
     return (
         <table className="table">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Name</th>
+                    <th>Date Visited</th>
+                    <th>Rating</th>
+                </tr>
+            </thead>
             <tbody>
-                {sortedLocations.map((location, index) => (
+                {locations.map((location, index) => (
                     <tr key={location.id}
                     style={{ backgroundColor: getRowColor(index) }}
                     >

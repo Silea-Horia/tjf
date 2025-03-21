@@ -26,22 +26,57 @@ const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, sel
     };
 
     const isUpdateDisabled = selectedLocationIds.length !== 1;
-    
     const isDeleteDisabled = selectedLocationIds.length < 1;
+
+    const filteredLocations = serv.filter(searchTerm, selectedRatings).sort((a, b) => b.rating - a.rating);
+    const totalPages = Math.ceil(filteredLocations.length / itemsPerPage);
+    const startIndex = (currentListPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedLocations = filteredLocations.slice(startIndex, endIndex);
+
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setCurrentListPage(newPage);
+        }
+    };
 
     return (
         <div className="main-content">
             <LocationList 
-                locations={serv.filter(searchTerm, selectedRatings)} 
+                locations={paginatedLocations} 
+                allLocations={filteredLocations}
                 selectedLocationIds={selectedLocationIds} 
                 setSelectedLocationIds={setSelectedLocationIds}
+                currentListPage={currentListPage}
+                itemsPerPage={itemsPerPage}
             />
             <div className='button-container'>
                 <button className='button' type="button" onClick={() => setCurrentPage('add')}>Add</button>
                 <button className='button' type="button" onClick={removeElements} disabled={isDeleteDisabled}>Remove</button>
                 <button className='button' type="button" onClick={() => handleUpdateClick()} disabled={isUpdateDisabled}>Update</button>
             </div>
-            </div>
+            {totalPages > 1 && (
+                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
+                    <button
+                        className='button' 
+                        onClick={() => handlePageChange(currentListPage - 1)} 
+                        disabled={currentListPage === 1}
+                    >
+                        Previous
+                    </button>
+                    <span style={{ margin: '0 10px', alignSelf: 'center' }}>
+                        Page {currentListPage} of {totalPages}
+                    </span>
+                    <button 
+                        className='button' 
+                        onClick={() => handlePageChange(currentListPage + 1)} 
+                        disabled={currentListPage === totalPages}
+                    >
+                        Next
+                    </button>
+                </div>
+            )}
+        </div>
     )
 }
 

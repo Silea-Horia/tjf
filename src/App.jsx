@@ -11,6 +11,10 @@ import Master from './components/Master';
 const initialLocations = [
     { id: 1, name: 'The Eiffel Tower', dateVisited: '2025-08-10', rating: 5 },
     { id: 2, name: 'Sibiu', dateVisited: '2004-01-14', rating: 5 },
+    { id: 3, name: 'Barcelona', dateVisited: '2024-05-15', rating: 4 },
+    { id: 4, name: 'London', dateVisited: '2023-07-20', rating: 3 },
+    { id: 5, name: 'Tokyo', dateVisited: '2022-11-01', rating: 1 },
+    { id: 6, name: 'New York', dateVisited: '2021-09-12', rating: 4 },
 ];
 
 const repo = new Repository([...initialLocations]);
