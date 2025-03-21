@@ -45,7 +45,7 @@ const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, sel
     };
 
     const ratingCounts = [0, 1, 2, 3, 4, 5].map(rating =>
-        filteredLocations.filter(loc => loc.rating === rating).length
+        serv.getAll().filter(loc => loc.rating === rating).length
     );
 
     const pieChartData = {
