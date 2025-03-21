@@ -1,6 +1,7 @@
 class Service {
     constructor(Repository) {
         this.repo = Repository;
+        this.isRunning = false;
     }
 
     getAll() {
@@ -60,6 +61,46 @@ class Service {
 
     matchesRating(location, selectedRatings) {
         return selectedRatings.length == 0 || selectedRatings.includes(location.rating);
+    }
+
+    getRandomDate() {
+        const year = Math.floor(Math.random() * (2025 - 2000 + 1)) + 2000;
+        const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0');
+        const day = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    async insertRandomRecord() {
+        const placeNames = ['Paris', 'Tokyo', 'New York', 'London', 'Sydney', 'Rome', 'Berlin', 'Moscow', 'Cairo', 'Toronto'];
+        const name = placeNames[Math.floor(Math.random() * placeNames.length)];
+        const dateVisited = this.getRandomDate();
+        const rating = Math.floor(Math.random() * 6);
+        return this.create(name, dateVisited, rating);
+    }
+
+    startRandomInsertions() {
+        if (this.isRunning) return;
+        this.isRunning = true;
+
+        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        const insertBatch = async () => {
+            while (this.isRunning) {
+                console.log('Inserting 5 random records...');
+                const promises = [];
+                for (let i = 0; i < 5; i++) {
+                    promises.push(this.insertRandomRecord());
+                }
+                await Promise.all(promises); 
+                await delay(10000); 
+            }
+        };
+
+        insertBatch().catch(err => console.error('Random insertion error:', err));
+    }
+
+    stopRandomInsertions() {
+        this.isRunning = false;
     }
 };
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './App.css';
 
 import Repository from './repo/Repository'
@@ -33,6 +33,19 @@ function App() {
         dateVisited: '',
         rating: 0,
     });
+
+    useEffect(() => {
+        serv.startRandomInsertions();
+
+        const updateInterval = setInterval(() => {
+            setData(serv.getAll());
+        }, 2000);
+
+        return () => {
+            serv.stopRandomInsertions();
+            clearInterval(updateInterval);
+        };
+    }, []);
 
     const handleAddLocation = (e) => {
         e.preventDefault();
