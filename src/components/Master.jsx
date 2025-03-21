@@ -1,5 +1,9 @@
 import React, {useState} from 'react'
 import LocationList from './LocationList'
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, selectedLocationIds, setSelectedLocationIds, setCurrentPage}) => {
     const [currentListPage, setCurrentListPage] = useState(1);
@@ -40,6 +44,35 @@ const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, sel
         }
     };
 
+    const ratingCounts = [0, 1, 2, 3, 4, 5].map(rating =>
+        filteredLocations.filter(loc => loc.rating === rating).length
+    );
+
+    const pieChartData = {
+        labels: ['0 Stars', '1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
+        datasets: [{
+            data: ratingCounts,
+            backgroundColor: [
+                '#FF6384', // 0 stars
+                '#36A2EB', // 1 star
+                '#FFCE56', // 2 stars
+                '#4BC0C0', // 3 stars
+                '#9966FF', // 4 stars
+                '#FF9F40', // 5 stars
+            ],
+            hoverOffset: 4,
+        }],
+    };
+
+    const pieChartOptions = {
+        plugins: {
+            legend: {
+                position: 'right',
+            },
+        },
+        maintainAspectRatio: false,
+    };
+
     return (
         <div className="main-content">
             <LocationList 
@@ -50,6 +83,9 @@ const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, sel
                 currentListPage={currentListPage}
                 itemsPerPage={itemsPerPage}
             />
+            <div style={{ height: '500px', margin: '400px 500px', position: 'absolute' }}>
+                <Pie data={pieChartData} options={pieChartOptions} />
+            </div>
             <div className='button-container'>
                 <button className='button' type="button" onClick={() => setCurrentPage('add')}>Add</button>
                 <button className='button' type="button" onClick={removeElements} disabled={isDeleteDisabled}>Remove</button>
