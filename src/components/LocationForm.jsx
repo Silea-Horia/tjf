@@ -1,16 +1,25 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import './Form.css'
 
-const LocationForm = ({submitHandler, newLocation, setNewLocation, setCurrentPage}) => {
+const LocationForm = ({submitHandler, newLocation, setNewLocation, setCurrentPage, error, setError}) => {
     const handleInputChange = (e) => {
         const value = e.target.name === 'rating' ? parseInt(e.target.value, 10) : e.target.value;
         setNewLocation({ ...newLocation, [e.target.name]: value });
+        setError(null);
     };
 
     const handleCancelClick = () => {
         setNewLocation({ name: '', dateVisited: '', rating: 0 });
         setCurrentPage('list');
+        setError(null);
     };
+
+    useEffect(() => {
+        if (error) {
+            alert(error);
+            // setError(null);
+        }
+    }, [error]);
 
     return (
         <div className='form-container'>

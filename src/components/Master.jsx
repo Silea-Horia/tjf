@@ -1,13 +1,21 @@
-import React from 'react'
+import React, {useState} from 'react'
 import LocationList from './LocationList'
 
 const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, selectedLocationIds, setSelectedLocationIds, setCurrentPage}) => {
+    const [currentListPage, setCurrentListPage] = useState(1);
+    const itemsPerPage = 5;
+
     const removeElements = () => {
         selectedLocationIds.forEach(locationId => {
           serv.delete(locationId);
         });
         setData(serv.getAll());
         setSelectedLocationIds([]);
+
+        const filteredLocations = serv.filter(searchTerm, selectedRatings);
+        if ((currentListPage - 1) * itemsPerPage >= filteredLocations.length) {
+            setCurrentListPage(currentListPage - 1);
+        }
     };
 
     const handleUpdateClick = () => {
