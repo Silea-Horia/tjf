@@ -1,7 +1,7 @@
 class Repository {
-  constructor(initialData=[]) {
+  constructor(initialData) {
     this.locations = initialData;
-    this.nextId = initialData.length > 0 ? Math.max(...initialData.map(loc => loc.id)) + 1 : 1;
+    this.nextId = Math.max(...initialData.map(loc => loc.id)) + 1;
   }
 
   create(name, dateVisited, rating) {

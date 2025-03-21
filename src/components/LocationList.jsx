@@ -7,12 +7,27 @@ const LocationList = ({locations, selectedLocationIds, setSelectedLocationIds}) 
                 : [...prevLocations, location.id]
         );
     };
+    
+    const sortedLocations = [...locations].sort((a, b) => b.rating - a.rating);
+    
+    const getRowColor = (index) => {
+        const thirdSize = Math.floor(sortedLocations.length / 3);
+        if (index < thirdSize) {
+        return 'yellow';
+        } else if (index >= 2 * thirdSize) {
+        return 'red';
+        } else {
+        return 'orange';
+        }
+    };
 
     return (
         <table className="table">
             <tbody>
-                {locations.map((location) => (
-                    <tr key={location.id}>
+                {sortedLocations.map((location, index) => (
+                    <tr key={location.id}
+                    style={{ backgroundColor: getRowColor(index) }}
+                    >
                         <td>
                             <input
                                 type="checkbox"

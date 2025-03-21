@@ -32,6 +32,12 @@ describe('Repository', () => {
         expect(repo.read(2)).toEqual({ ...updatedLocation, id: 2 });
     });
 
+    it('should npt update a location', () => {
+        const updatedLocation = { name: 'Updated Sibiu', dateVisited: '2005-01-14', rating: 5 };
+        const result = repo.update(-1, updatedLocation.name, updatedLocation.dateVisited, updatedLocation.rating);
+        expect(result).toEqual(null);
+    });
+
     it('should delete a location', () => {
         const result = repo.delete(1);
         expect(result).toBe(true);
