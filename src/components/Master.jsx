@@ -7,7 +7,18 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, selectedLocationIds, setSelectedLocationIds, setCurrentPage}) => {
     const [currentListPage, setCurrentListPage] = useState(1);
+    
     const itemsPerPage = 5;
+    const [isInserting, setIsInserting] = useState(true);
+
+    const toggleInsertions = () => {
+        if (isInserting) {
+            serv.stopRandomInsertions();
+        } else {
+            serv.startRandomInsertions();
+        }
+        setIsInserting(!isInserting);
+    };
 
     const removeElements = () => {
         selectedLocationIds.forEach(locationId => {
@@ -90,6 +101,9 @@ const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, sel
                 <button className='button' type="button" onClick={() => setCurrentPage('add')}>Add</button>
                 <button className='button' type="button" onClick={removeElements} disabled={isDeleteDisabled}>Remove</button>
                 <button className='button' type="button" onClick={() => handleUpdateClick()} disabled={isUpdateDisabled}>Update</button>
+                <button className='button' type="button" onClick={toggleInsertions}>
+                    {isInserting ? 'Stop Insertions' : 'Start Insertions'}
+                </button>
             </div>
             {totalPages > 1 && (
                 <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>

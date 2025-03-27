@@ -39,7 +39,7 @@ function App() {
     
         const updateInterval = setInterval(() => {
             setData(serv.getAll());
-        }, 5000); // Sync with the 5-second insertion interval
+        }, 5000);
     
         return () => {
             serv.stopRandomInsertions();
