@@ -7,8 +7,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, selectedLocationIds, setSelectedLocationIds, setCurrentPage}) => {
     const [currentListPage, setCurrentListPage] = useState(1);
-    
-    const itemsPerPage = 5;
+    const [itemsPerPage, setItemsPerPage] = useState(5)
     const [isInserting, setIsInserting] = useState(true);
 
     const toggleInsertions = () => {
@@ -18,6 +17,12 @@ const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, sel
             serv.startRandomInsertions();
         }
         setIsInserting(!isInserting);
+    };
+
+    const handleItemsPerPageChange = (e) => {
+        const newItemsPerPage = parseInt(e.target.value);
+        setItemsPerPage(newItemsPerPage);
+        setCurrentListPage(1);
     };
 
     const removeElements = () => {
@@ -105,27 +110,41 @@ const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, sel
                     {isInserting ? 'Stop Insertions' : 'Start Insertions'}
                 </button>
             </div>
-            {totalPages > 1 && (
-                <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px' }}>
-                    <button
-                        className='button' 
-                        onClick={() => handlePageChange(currentListPage - 1)} 
-                        disabled={currentListPage === 1}
-                    >
-                        Previous
-                    </button>
-                    <span style={{ margin: '0 10px', alignSelf: 'center' }}>
-                        Page {currentListPage} of {totalPages}
-                    </span>
-                    <button 
-                        className='button' 
-                        onClick={() => handlePageChange(currentListPage + 1)} 
-                        disabled={currentListPage === totalPages}
-                    >
-                        Next
-                    </button>
-                </div>
-            )}
+            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px', alignItems: 'center' }}>
+                <label htmlFor="itemsPerPage" style={{ marginRight: '10px' }}>Items per page:</label>
+                <select
+                    id="itemsPerPage"
+                    value={itemsPerPage}
+                    onChange={handleItemsPerPageChange}
+                    style={{ marginRight: '20px', padding: '5px' }}
+                >
+                    <option value={5}>5</option>
+                    <option value={10}>10</option>
+                    <option value={15}>15</option>
+                    <option value={20}>20</option>
+                </select>
+                {totalPages > 1 && (
+                    <>
+                        <button
+                            className='button' 
+                            onClick={() => handlePageChange(currentListPage - 1)} 
+                            disabled={currentListPage === 1}
+                        >
+                            Previous
+                        </button>
+                        <span style={{ margin: '0 10px', alignSelf: 'center' }}>
+                            Page {currentListPage} of {totalPages}
+                        </span>
+                        <button 
+                            className='button' 
+                            onClick={() => handlePageChange(currentListPage + 1)} 
+                            disabled={currentListPage === totalPages}
+                        >
+                            Next
+                        </button>
+                    </>
+                )}
+            </div>
         </div>
     )
 }
