@@ -112,12 +112,7 @@ const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, sel
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '10px', alignItems: 'center' }}>
                 <label htmlFor="itemsPerPage" style={{ marginRight: '10px' }}>Items per page:</label>
-                <select
-                    id="itemsPerPage"
-                    value={itemsPerPage}
-                    onChange={handleItemsPerPageChange}
-                    style={{ marginRight: '20px', padding: '5px' }}
-                >
+                <select id="itemsPerPage" value={itemsPerPage} onChange={handleItemsPerPageChange} style={{ marginRight: '20px', padding: '5px' }}>
                     <option value={5}>5</option>
                     <option value={10}>10</option>
                     <option value={15}>15</option>
