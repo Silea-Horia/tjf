@@ -36,11 +36,11 @@ function App() {
 
     useEffect(() => {
         serv.startRandomInsertions();
-
+    
         const updateInterval = setInterval(() => {
             setData(serv.getAll());
-        }, 2000);
-
+        }, 5000); // Sync with the 5-second insertion interval
+    
         return () => {
             serv.stopRandomInsertions();
             clearInterval(updateInterval);

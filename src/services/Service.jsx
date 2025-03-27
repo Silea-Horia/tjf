@@ -79,28 +79,32 @@ class Service {
     }
 
     startRandomInsertions() {
-        if (this.isRunning) return;
+        if (this.isRunning) return; // Prevent multiple intervals
         this.isRunning = true;
 
-        const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
         const insertBatch = async () => {
-            while (this.isRunning) {
-                console.log('Inserting 5 random records...');
-                const promises = [];
-                for (let i = 0; i < 5; i++) {
-                    promises.push(this.insertRandomRecord());
-                }
-                await Promise.all(promises); 
-                await delay(10000); 
+            if (!this.isRunning) return; // Exit if stopped
+            console.log('Inserting 5 random records...');
+            const promises = [];
+            for (let i = 0; i < 5; i++) {
+                promises.push(this.insertRandomRecord());
             }
+            await Promise.all(promises); // Wait for all 5 insertions to complete
         };
 
-        insertBatch().catch(err => console.error('Random insertion error:', err));
+        // Run immediately, then every 5 seconds
+        insertBatch().catch(err => console.error('Initial random insertion error:', err));
+        this.insertionInterval = setInterval(() => {
+            insertBatch().catch(err => console.error('Random insertion error:', err));
+        }, 5000); // 5000 ms = 5 seconds
     }
 
     stopRandomInsertions() {
         this.isRunning = false;
+        if (this.insertionInterval) {
+            clearInterval(this.insertionInterval); // Clear the interval
+            this.insertionInterval = null;
+        }
     }
 };
 

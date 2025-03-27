@@ -83,7 +83,7 @@ const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, sel
                 currentListPage={currentListPage}
                 itemsPerPage={itemsPerPage}
             />
-            <div style={{ height: '500px', margin: '400px 500px', position: 'absolute' }}>
+            <div style={{ height: '500px', margin: '300px 500px', position: 'absolute' }}>
                 <Pie data={pieChartData} options={pieChartOptions} />
             </div>
             <div className='button-container'>
