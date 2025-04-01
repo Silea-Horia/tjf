@@ -12,7 +12,7 @@ const LocationForm = ({ submitHandler, newLocation, setNewLocation, setCurrentPa
 
   const handleCancel = () => {
     setNewLocation({ name: '', dateVisited: '', rating: 0 });
-    setCurrentPage('list');
+    setCurrentPage(); // Now navigates to '/' via page components
     setError(null);
   };
 

@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import LocationList from './LocationList';
-import PaginationControls from './PaginationControls'; // New component
-import ActionButtons from './ActionButtons'; // New component
-import RatingPieChart from './RatingPieChart'; // New component
-import { PIE_CHART_CONFIG } from './constants,jsx'; // New constants file
+import PaginationControls from './PaginationControls';
+import ActionButtons from './ActionButtons';
+import RatingPieChart from './RatingPieChart';
+import { PIE_CHART_CONFIG } from './constants.js';
 
 const Master = ({
   serv,
   data,
   setData,
-  setNewLocation,
   searchTerm,
   selectedRatings,
   selectedLocationIds,
   setSelectedLocationIds,
-  setCurrentPage,
 }) => {
   const [currentListPage, setCurrentListPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isInserting, setIsInserting] = useState(false);
+  const navigate = useNavigate();
 
   const filteredLocations = serv
     .filter(data, searchTerm, selectedRatings)
@@ -46,21 +46,7 @@ const Master = ({
 
   const handleUpdateClick = async () => {
     if (selectedLocationIds.length === 1) {
-      try {
-        const location = await serv.read(selectedLocationIds[0]);
-        if (location && location.name && location.dateVisited && location.rating !== undefined) {
-          setNewLocation({
-            name: location.name,
-            dateVisited: location.dateVisited,
-            rating: location.rating,
-          });
-          setCurrentPage('update');
-        } else {
-          alert('Failed to load location data for update.');
-        }
-      } catch (error) {
-        alert(`Error fetching location: ${error.message}`);
-      }
+      navigate(`/update/${selectedLocationIds[0]}`);
     }
   };
 
@@ -76,7 +62,7 @@ const Master = ({
       />
       <RatingPieChart data={data} />
       <ActionButtons
-        onAdd={() => setCurrentPage('add')}
+        onAdd={() => navigate('/add')}
         onRemove={handleRemove}
         onUpdate={handleUpdateClick}
         onToggleInsertions={handleToggleInsertions}

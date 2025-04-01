@@ -1,6 +1,6 @@
 import React from 'react';
 import { Pie } from 'react-chartjs-2';
-import { PIE_CHART_CONFIG } from './constants,jsx';
+import { PIE_CHART_CONFIG } from './constants.js';
 
 const RatingPieChart = ({ data }) => {
   const ratingCounts = [0, 1, 2, 3, 4, 5].map((rating) =>
