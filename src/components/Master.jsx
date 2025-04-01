@@ -20,11 +20,8 @@ const Master = ({
   const [isInserting, setIsInserting] = useState(false);
   const navigate = useNavigate();
 
-  const filteredLocations = serv
-    .filter(data, searchTerm, selectedRatings)
-    .sort((a, b) => b.rating - a.rating);
-  const totalPages = Math.ceil(filteredLocations.length / itemsPerPage);
-  const paginatedLocations = filteredLocations.slice(
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const paginatedLocations = data.slice(
     (currentListPage - 1) * itemsPerPage,
     currentListPage * itemsPerPage
   );
@@ -39,7 +36,7 @@ const Master = ({
     for (const id of selectedLocationIds) await serv.delete(id);
     setData();
     setSelectedLocationIds([]);
-    if ((currentListPage - 1) * itemsPerPage >= filteredLocations.length && currentListPage > 1) {
+    if ((currentListPage - 1) * itemsPerPage >= data.length && currentListPage > 1) {
       setCurrentListPage(currentListPage - 1);
     }
   };
@@ -54,7 +51,7 @@ const Master = ({
     <div className="main-content">
       <LocationList
         locations={paginatedLocations}
-        allLocations={filteredLocations}
+        allLocations={data}
         selectedLocationIds={selectedLocationIds}
         setSelectedLocationIds={setSelectedLocationIds}
         currentListPage={currentListPage}

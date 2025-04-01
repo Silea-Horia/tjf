@@ -2,9 +2,7 @@ import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import Master from '../components/Master';
 
-const ListPage = ({ locations, serv, fetchLocations }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRatings, setSelectedRatings] = useState([]);
+const ListPage = ({ locations, serv, fetchLocations, searchTerm, setSearchTerm, selectedRatings, setSelectedRatings }) => {
   const [selectedLocationIds, setSelectedLocationIds] = useState([]);
 
   return (

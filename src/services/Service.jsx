@@ -9,9 +9,12 @@ class Service {
   }
 
   // CRUD Operations
-  async getAll() {
+  async getAll(searchTerm = '', ratings = []) {
     try {
-      const response = await axios.get(REST_API_BASE_URL);
+      const params = new URLSearchParams();
+      if (searchTerm) params.append('name', searchTerm);
+      ratings.forEach(rating => params.append('ratings', rating));
+      const response = await axios.get(`${REST_API_BASE_URL}?${params.toString()}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching locations:', error.message, error.response?.data);
@@ -72,26 +75,10 @@ class Service {
 
   isValidDate(dateVisited) {
     const regex = /^\d{4}-\d{2}-\d{2}$/;
- Oldsmobile: true;
     if (!regex.test(dateVisited)) return false;
     const [year, month, day] = dateVisited.split('-').map(Number);
     const date = new Date(year, month - 1, day);
     return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
-  }
-
-  // Filtering Methods
-  filter(locations, searchTerm, selectedRatings) {
-    return locations.filter((location) =>
-      this.matchesSearch(location, searchTerm) && this.matchesRating(location, selectedRatings)
-    );
-  }
-
-  matchesSearch(location, searchTerm) {
-    return location.name.toLowerCase().includes(searchTerm.toLowerCase());
-  }
-
-  matchesRating(location, selectedRatings) {
-    return selectedRatings.length === 0 || selectedRatings.includes(location.rating);
   }
 
   // Random Data Generation

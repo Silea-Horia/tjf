@@ -2,22 +2,34 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import './App.css';
 import Service from './services/Service';
 import useLocations from './hooks/useLocations';
-import Sidebar from './components/Sidebar';
-import LocationForm from './components/LocationForm';
-import Master from './components/Master';
-import ListPage from './pages/ListPage'; // New component
-import AddPage from './pages/AddPage'; // New component
-import UpdatePage from './pages/UpdatePage'; // New component
+import ListPage from './pages/ListPage'; 
+import AddPage from './pages/AddPage'; 
+import UpdatePage from './pages/UpdatePage'; 
+import { useState } from 'react';
 
 const serv = new Service();
 
 function App() {
-  const { locations, error, setError, fetchLocations } = useLocations(serv);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedRatings, setSelectedRatings] = useState([]);
+  const { locations, error, setError, fetchLocations } = useLocations(serv, searchTerm, selectedRatings);
 
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<ListPage locations={locations} serv={serv} fetchLocations={fetchLocations} />} />
+        <Route 
+          path="/" 
+          element={
+          <ListPage 
+            locations={locations} 
+            serv={serv} 
+            fetchLocations={fetchLocations} 
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            selectedRatings={selectedRatings}
+            setSelectedRatings={setSelectedRatings}
+          />} 
+        />
         <Route
           path="/add"
           element={<AddPage serv={serv} fetchLocations={fetchLocations} error={error} setError={setError} />}

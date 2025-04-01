@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 
-const useLocations = (service) => {
+const useLocations = (service, searchTerm = '', ratings = []) => {
   const [locations, setLocations] = useState([]);
   const [error, setError] = useState(null);
 
   const fetchLocations = async () => {
     try {
-      const data = await service.getAll();
+      const data = await service.getAll(searchTerm, ratings);
       setLocations(data);
     } catch (err) {
       setError('Failed to fetch locations');
@@ -21,7 +21,7 @@ const useLocations = (service) => {
       service.stopRandomInsertions();
       clearInterval(interval);
     };
-  }, [service]);
+  }, [service, searchTerm, ratings]);
 
   return { locations, error, setError, fetchLocations };
 };
