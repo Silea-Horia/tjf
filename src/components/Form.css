@@ -1,31 +1,62 @@
 .form-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100vw;
-  }
-  
-  form {
-    padding: 20px;
-    background-color: #d9d9d9;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  form > * {
-    margin-top: 10px;
-  }
-  
-  .form-buttons {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .error-message {
-    color: red;
-    margin-top: 10px;
-    text-align: center;
-  }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+form {
+  padding: 20px;
+  background-color: #d9d9d9;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+form > * {
+  margin-top: 10px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.form-field label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.form-field input {
+  width: 100%;
+  max-width: 300px; /* Keeps inputs manageable */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.field-error {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 5px;
+  text-align: center;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+  text-align: center;
+}

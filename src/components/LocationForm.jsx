@@ -1,8 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './Form.css';
 
 const LocationForm = ({ submitHandler, newLocation, setNewLocation, setCurrentPage, error, setError, title = 'Location Details' }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const parseErrors = (error) => {
+    if (!error || typeof error !== 'object') return {};
+    return Object.entries(error).reduce((acc, [field, message]) => {
+      acc[field] = message;
+      return acc;
+    }, {});
+  };
+
+  const fieldErrors = error && typeof error === 'object' ? parseErrors(error) : {};
 
   const handleInputChange = (e) => {
     const value = e.target.name === 'rating' ? parseInt(e.target.value, 10) || 0 : e.target.value;
@@ -16,21 +26,11 @@ const LocationForm = ({ submitHandler, newLocation, setNewLocation, setCurrentPa
     setError(null);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    try {
-      await submitHandler(e);
-    } catch (err) {
-      console.error('Submission error:', err);
-    } finally {
-      setIsSubmitting(false);
-    }
+    submitHandler(e).finally(() => setIsSubmitting(false));
   };
-
-  useEffect(() => {
-    if (error) alert(error);
-  }, [error]);
 
   const safeNewLocation = {
     name: newLocation?.name || '',
@@ -42,31 +42,49 @@ const LocationForm = ({ submitHandler, newLocation, setNewLocation, setCurrentPa
     <div className="form-container">
       <form onSubmit={handleSubmit}>
         <h1>{title}</h1>
-        <input
-          type="text"
-          name="name"
-          placeholder="Name"
-          value={safeNewLocation.name}
-          onChange={handleInputChange}
-          disabled={isSubmitting}
-        />
-        <input
-          type="date"
-          name="dateVisited"
-          value={safeNewLocation.dateVisited}
-          onChange={handleInputChange}
-          disabled={isSubmitting}
-        />
-        <input
-          type="number"
-          name="rating"
-          placeholder="Rating"
-          value={safeNewLocation.rating}
-          onChange={handleInputChange}
-          min="0"
-          max="5"
-          disabled={isSubmitting}
-        />
+        <div className="form-field">
+          <label>
+            Name:
+            <input
+              type="text"
+              name="name"
+              placeholder="Name"
+              value={safeNewLocation.name}
+              onChange={handleInputChange}
+              disabled={isSubmitting}
+            />
+          </label>
+          {fieldErrors.name && <span className="field-error">{fieldErrors.name}</span>}
+        </div>
+        <div className="form-field">
+          <label>
+            Date Visited:
+            <input
+              type="date"
+              name="dateVisited"
+              value={safeNewLocation.dateVisited}
+              onChange={handleInputChange}
+              disabled={isSubmitting}
+            />
+          </label>
+          {fieldErrors.dateVisited && <span className="field-error">{fieldErrors.dateVisited}</span>}
+        </div>
+        <div className="form-field">
+          <label>
+            Rating:
+            <input
+              type="number"
+              name="rating"
+              placeholder="Rating"
+              value={safeNewLocation.rating}
+              onChange={handleInputChange}
+              min="0"
+              max="5"
+              disabled={isSubmitting}
+            />
+          </label>
+          {fieldErrors.rating && <span className="field-error">{fieldErrors.rating}</span>}
+        </div>
         <div className="form-buttons">
           <button type="submit" className="button" disabled={isSubmitting}>
             {isSubmitting ? 'Saving...' : 'Save'}
@@ -75,8 +93,10 @@ const LocationForm = ({ submitHandler, newLocation, setNewLocation, setCurrentPa
             Cancel
           </button>
         </div>
+        {error && !Object.keys(fieldErrors).length && (
+          <p className="error-message">{error}</p>
+        )}
       </form>
-      {error && <p className="error-message">{error}</p>}
     </div>
   );
 };

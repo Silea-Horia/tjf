@@ -8,15 +8,20 @@ const AddPage = ({ serv, fetchLocations, error, setError }) => {
 
   const handleAddLocation = async (e) => {
     e.preventDefault();
-    const result = await serv.create(newLocation.name, newLocation.dateVisited, newLocation.rating);
-    if (result == null) {
-      setError('Invalid input: Rating must be 0-5, and date must be a valid YYYY-MM-DD format.');
-    } else {
+    try {
+      await serv.create(newLocation.name, newLocation.dateVisited, newLocation.rating);
       setNewLocation({ name: '', dateVisited: '', rating: 0 });
       fetchLocations();
       setError(null);
       navigate('/');
-    }
+    } catch (err) {
+      const errorData = err.response?.data;
+      if (errorData && typeof errorData === 'object') {
+          setError(Object.values(errorData).join(', '));
+      } else {
+          setError('Failed to add location');
+      }
+  }
   };
 
   return (

@@ -23,13 +23,12 @@ class Service {
   }
 
   async create(name, dateVisited, rating) {
-    if (!this.validParameters(dateVisited, rating)) return null;
     try {
       const response = await axios.post(REST_API_BASE_URL, { name, dateVisited, rating });
       return response.data;
     } catch (error) {
       console.error('Error creating location:', error.message);
-      return null;
+      throw error;
     }
   }
 
@@ -44,13 +43,12 @@ class Service {
   }
 
   async update(id, name, dateVisited, rating) {
-    if (!this.validParameters(dateVisited, rating)) return null;
     try {
       const response = await axios.put(`${REST_API_BASE_URL}/${id}`, { name, dateVisited, rating });
       return response.data;
     } catch (error) {
       console.error('Error updating location:', error.message);
-      return null;
+      throw null;
     }
   }
 
@@ -62,23 +60,6 @@ class Service {
       console.error('Error deleting location:', error.message);
       return false;
     }
-  }
-
-  // Validation Helpers
-  validParameters(dateVisited, rating) {
-    return this.isValidRating(rating) && this.isValidDate(dateVisited);
-  }
-
-  isValidRating(rating) {
-    return Number.isInteger(rating) && rating >= 0 && rating <= 5;
-  }
-
-  isValidDate(dateVisited) {
-    const regex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!regex.test(dateVisited)) return false;
-    const [year, month, day] = dateVisited.split('-').map(Number);
-    const date = new Date(year, month - 1, day);
-    return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
   }
 
   // Random Data Generation
