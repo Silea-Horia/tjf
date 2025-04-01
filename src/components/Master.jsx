@@ -1,14 +1,24 @@
-import React, {useState} from 'react'
-import LocationList from './LocationList'
+import React, { useState } from 'react';
+import LocationList from './LocationList';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, selectedLocationIds, setSelectedLocationIds, setCurrentPage}) => {
+const Master = ({
+    serv,
+    data,
+    setData,
+    setNewLocation,
+    searchTerm,
+    selectedRatings,
+    selectedLocationIds,
+    setSelectedLocationIds,
+    setCurrentPage
+}) => {
     const [currentListPage, setCurrentListPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(5)
-    const [isInserting, setIsInserting] = useState(true);
+    const [itemsPerPage, setItemsPerPage] = useState(5);
+    const [isInserting, setIsInserting] = useState(false);
 
     const toggleInsertions = () => {
         if (isInserting) {
@@ -25,30 +35,47 @@ const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, sel
         setCurrentListPage(1);
     };
 
-    const removeElements = () => {
-        selectedLocationIds.forEach(locationId => {
-          serv.delete(locationId);
-        });
-        setData(serv.getAll());
+    const removeElements = async () => {
+        for (const locationId of selectedLocationIds) {
+            await serv.delete(locationId);
+        }
+        const updatedData = await serv.getAll();
+        setData(updatedData);
         setSelectedLocationIds([]);
 
-        const filteredLocations = serv.filter(searchTerm, selectedRatings);
-        if ((currentListPage - 1) * itemsPerPage >= filteredLocations.length) {
+        const filteredLocations = serv.filter(updatedData, searchTerm, selectedRatings);
+        if ((currentListPage - 1) * itemsPerPage >= filteredLocations.length && currentListPage > 1) {
             setCurrentListPage(currentListPage - 1);
         }
     };
 
-    const handleUpdateClick = () => {
+    const handleUpdateClick = async () => {
         if (selectedLocationIds.length === 1) {
-            setNewLocation(serv.getAll().filter(location => location.id === selectedLocationIds[0])[0]);
-            setCurrentPage('update');
+            try {
+                const location = await serv.read(selectedLocationIds[0]);
+                console.log('Fetched location:', location); // Debug: Check the API response
+                if (location && location.name && location.dateVisited && location.rating !== undefined) {
+                    setNewLocation({
+                        name: location.name,
+                        dateVisited: location.dateVisited,
+                        rating: location.rating,
+                    });
+                    setCurrentPage('update');
+                } else {
+                    console.error('Invalid location data:', location);
+                    alert('Failed to load location data for update.');
+                }
+            } catch (error) {
+                console.error('Error fetching location for update:', error);
+                alert('An error occurred while fetching the location.');
+            }
         }
     };
 
     const isUpdateDisabled = selectedLocationIds.length !== 1;
     const isDeleteDisabled = selectedLocationIds.length < 1;
 
-    const filteredLocations = serv.filter(searchTerm, selectedRatings).sort((a, b) => b.rating - a.rating);
+    const filteredLocations = serv.filter(data, searchTerm, selectedRatings).sort((a, b) => b.rating - a.rating);
     const totalPages = Math.ceil(filteredLocations.length / itemsPerPage);
     const startIndex = (currentListPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
@@ -61,31 +88,20 @@ const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, sel
     };
 
     const ratingCounts = [0, 1, 2, 3, 4, 5].map(rating =>
-        serv.getAll().filter(loc => loc.rating === rating).length
+        data.filter(loc => loc.rating === rating).length
     );
 
     const pieChartData = {
         labels: ['0 Stars', '1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
         datasets: [{
             data: ratingCounts,
-            backgroundColor: [
-                '#FF6384', // 0 stars
-                '#36A2EB', // 1 star
-                '#FFCE56', // 2 stars
-                '#4BC0C0', // 3 stars
-                '#9966FF', // 4 stars
-                '#FF9F40', // 5 stars
-            ],
+            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
             hoverOffset: 4,
         }],
     };
 
     const pieChartOptions = {
-        plugins: {
-            legend: {
-                position: 'right',
-            },
-        },
+        plugins: { legend: { position: 'right' } },
         maintainAspectRatio: false,
     };
 
@@ -105,7 +121,7 @@ const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, sel
             <div className='button-container'>
                 <button className='button' type="button" onClick={() => setCurrentPage('add')}>Add</button>
                 <button className='button' type="button" onClick={removeElements} disabled={isDeleteDisabled}>Remove</button>
-                <button className='button' type="button" onClick={() => handleUpdateClick()} disabled={isUpdateDisabled}>Update</button>
+                <button className='button' type="button" onClick={handleUpdateClick} disabled={isUpdateDisabled}>Update</button>
                 <button className='button' type="button" onClick={toggleInsertions}>
                     {isInserting ? 'Stop Insertions' : 'Start Insertions'}
                 </button>
@@ -141,7 +157,7 @@ const Master = ({serv, setData, setNewLocation, searchTerm, selectedRatings, sel
                 )}
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default Master
+export default Master;

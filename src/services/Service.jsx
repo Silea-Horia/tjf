@@ -1,17 +1,31 @@
+import axios from "axios";
+
+const REST_API_BASE_URL = 'http://localhost:8080/api/locations';
+
 class Service {
-    constructor(Repository) {
-        this.repo = Repository;
+    constructor() {
         this.isRunning = false;
     }
 
-    getAll() {
-        return this.repo.getAll();
+    async getAll() {
+        try {
+            const response = await axios.get(REST_API_BASE_URL);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching locations:', error);
+            throw error;
+        }
     }
 
-    create(name, dateVisited, rating) {
-        if(!this.validParameters(dateVisited, rating)) return null;
-        const newLocation = this.repo.create(name, dateVisited, rating);
-        return newLocation;
+    async create(name, dateVisited, rating) {
+        if (!this.validParameters(dateVisited, rating)) return null;
+        try {
+            const response = await axios.post(REST_API_BASE_URL, { name, dateVisited, rating});
+            return response.data; 
+        } catch (error) {
+            console.error('Error creating location:', error);
+            return null;
+        }
     }
 
     validParameters(dateVisited, rating) {
@@ -36,21 +50,43 @@ class Service {
         return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
     }
 
-    read(id) {
-        return this.repo.read(id);
+    async read(id) {
+        try {
+            const response = await axios.get(`${REST_API_BASE_URL}/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error('Error reading location:', error);
+            return null;
+        }
     }
 
-    update(id, newName, newDateVisited, newRating) {
-        if(!this.validParameters(newDateVisited, newRating)) return null;
-        return this.repo.update(id, newName, newDateVisited, newRating);
+    async update(id, newName, newDateVisited, newRating) {
+        if (!this.validParameters(newDateVisited, newRating)) return null;
+        try {
+            const response = await axios.put(`${REST_API_BASE_URL}/${id}`, {
+                name: newName,
+                dateVisited: newDateVisited,
+                rating: newRating
+            });
+            return response.data;
+        } catch (error) {
+            console.error('Error updating location:', error);
+            return null;
+        }
     }
 
-    delete(id) {
-        return this.repo.delete(id);
+    async delete(id) {
+        try {
+            await axios.delete(`${REST_API_BASE_URL}/${id}`);
+            return true;
+        } catch (error) {
+            console.error('Error deleting location:', error);
+            return false;
+        }
     }
 
-    filter(searchTerm, selectedRatings) {
-        return this.getAll().filter(location =>
+    filter(locations, searchTerm, selectedRatings) {
+        return locations.filter(location =>
             this.matchesSearch(location, searchTerm) && this.matchesRating(location, selectedRatings)
         );
     }

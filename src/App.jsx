@@ -1,28 +1,14 @@
 import { useState, useEffect } from 'react';
 import './App.css';
-
-import Repository from './repo/Repository'
-import Service from './services/Service'
-
+import Service from './services/Service';
 import Sidebar from './components/Sidebar';
 import LocationForm from './components/LocationForm';
 import Master from './components/Master';
 
-const initialLocations = [
-    { id: 1, name: 'The Eiffel Tower', dateVisited: '2025-08-10', rating: 5 },
-    { id: 2, name: 'Sibiu', dateVisited: '2004-01-14', rating: 5 },
-    { id: 3, name: 'Barcelona', dateVisited: '2024-05-15', rating: 4 },
-    { id: 4, name: 'London', dateVisited: '2023-07-20', rating: 3 },
-    { id: 5, name: 'Tokyo', dateVisited: '2022-11-01', rating: 1 },
-    { id: 6, name: 'New York', dateVisited: '2021-09-12', rating: 4 },
-];
-
-const repo = new Repository([...initialLocations]);
-const serv = new Service(repo);
+const serv = new Service();
 
 function App() {
-
-    const [data, setData] = useState(serv.getAll());
+    const [data, setData] = useState([]);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedRatings, setSelectedRatings] = useState([]);
@@ -35,40 +21,55 @@ function App() {
     });
 
     useEffect(() => {
-        serv.startRandomInsertions();
-    
-        const updateInterval = setInterval(() => {
-            setData(serv.getAll());
+        const fetchData = async () => {
+            try {
+                const locations = await serv.getAll();
+                setData(locations);
+            } catch (error) {
+                setError('Failed to fetch locations');
+            }
+        };
+
+        fetchData();
+
+        const updateInterval = setInterval(async () => {
+            try {
+                const locations = await serv.getAll();
+                setData(locations);
+            } catch (error) {
+                console.error('Error updating data:', error);
+            }
         }, 5000);
-    
+
         return () => {
             serv.stopRandomInsertions();
             clearInterval(updateInterval);
         };
     }, []);
 
-    const handleAddLocation = (e) => {
+    const handleAddLocation = async (e) => {
         e.preventDefault();
-        const result = serv.create(newLocation.name, newLocation.dateVisited, newLocation.rating);
+        const result = await serv.create(newLocation.name, newLocation.dateVisited, newLocation.rating);
         if (result == null) {
             setError('Invalid input: Rating must be 0-5, and date must be a valid YYYY-MM-DD format.');
         } else {
             setNewLocation({ name: '', dateVisited: '', rating: 0 });
-            setCurrentPage('list'); 
-            setData(serv.getAll());
+            setCurrentPage('list');
+            const updatedData = await serv.getAll();
+            setData(updatedData);
             setError(null);
         }
     };
 
-
-    const handleUpdateLocation = (e) => {
+    const handleUpdateLocation = async (e) => {
         e.preventDefault();
-        const result = serv.update(selectedLocationIds[0], newLocation.name, newLocation.dateVisited, newLocation.rating);
+        const result = await serv.update(selectedLocationIds[0], newLocation.name, newLocation.dateVisited, newLocation.rating);
         if (result == null) {
             setError('Invalid input: Rating must be 0-5, and date must be a valid YYYY-MM-DD format.');
         } else {
             setNewLocation({ name: '', dateVisited: '', rating: 0 });
-            setData(serv.getAll());
+            const updatedData = await serv.getAll();
+            setData(updatedData);
             setSelectedLocationIds([]);
             setCurrentPage('list');
             setError(null);
@@ -87,6 +88,7 @@ function App() {
                     />
                     <Master 
                         serv={serv}
+                        data={data}
                         setData={setData}
                         setNewLocation={setNewLocation}
                         searchTerm={searchTerm}
@@ -109,12 +111,12 @@ function App() {
             )}
             {currentPage === 'update' && (
                 <LocationForm 
-                submitHandler={handleUpdateLocation}
-                newLocation={newLocation}
-                setNewLocation={setNewLocation}
-                setCurrentPage={setCurrentPage}
-                error={error}
-                setError={setError}
+                    submitHandler={handleUpdateLocation}
+                    newLocation={newLocation}
+                    setNewLocation={setNewLocation}
+                    setCurrentPage={setCurrentPage}
+                    error={error}
+                    setError={setError}
                 />
             )}
         </>
