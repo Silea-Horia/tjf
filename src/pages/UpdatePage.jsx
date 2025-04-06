@@ -34,7 +34,7 @@ const UpdatePage = ({ serv, fetchLocations, error, setError }) => {
       try {
           await serv.update(id, newLocation.name, newLocation.dateVisited, newLocation.rating);
           setNewLocation({ name: '', dateVisited: '', rating: 0 });
-          fetchLocations();
+          await fetchLocations();
           setError(null);
           navigate('/');
       } catch (err) {

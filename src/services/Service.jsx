@@ -68,7 +68,10 @@ class Service {
 
   // CRUD Operations
   async getAll(searchTerm = '', ratings = []) {
-    //if (this.offlineQueue.length != 0) return this.offlineCopy;
+    if (this.getState() === 'offline') {
+      return this.offlineCopy;
+    }
+    
     try {
       const params = new URLSearchParams();
 
@@ -91,7 +94,7 @@ class Service {
       this.setConnState('serverDown');
       this.serverDown = true;
 
-      return this.offlineCopy; // adauga aici copia offline a entry-urilor
+      return this.offlineCopy;
     }
   }
 
@@ -145,7 +148,9 @@ class Service {
       const location = {id, name, dateVisited, rating};
       this.offlineQueue.push({action: 'update', data: location});
       this.saveQueueToStorage();
-      this.offlineCopy.map((elem) => {if(elem.id == location.id) {elem.name = location.name; elem.dateVisited = location.dateVisited; elem.rating = location.rating;}});
+      this.offlineCopy = this.offlineCopy.map(elem =>
+        elem.id == id ? { ...elem, name, dateVisited, rating } : elem
+      );
       return location;
     }
   }

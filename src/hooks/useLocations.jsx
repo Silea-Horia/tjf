@@ -11,6 +11,7 @@ const useLocations = (service, searchTerm = '', ratings = []) => {
     } catch (err) {
       setError('Failed to fetch locations');
       console.error('Error fetching locations:', err);
+      setLocations(serv.offlineCopy || []);
     }
   };
 
