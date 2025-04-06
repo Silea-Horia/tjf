@@ -3,7 +3,7 @@
   width: 15%;
   margin-left: 2%;
   margin-right: 2%;
-  margin-top: 2%;
+  /* margin-top: 2%; */
   height: 100vh;
 }
 
@@ -61,7 +61,7 @@
   float: left;
   margin-left: 2%;
   margin-right: 2%;
-  margin-top: 2%;
+  /* margin-top: 2%; */
   width: 75%;
   border-radius: 10px;
   height: 94vh;
@@ -108,4 +108,9 @@ tr, td {
 .button:active {
   background-color: #7D5D5D;
   box-shadow: none; 
+}
+
+#error-label {
+  padding: 0px;
+  margin: 1px;
 }

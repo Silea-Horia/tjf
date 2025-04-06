@@ -6,6 +6,58 @@ class Service {
   constructor() {
     this.isRunning = false;
     this.insertionInterval = null;
+    this.offlineQueue = [];
+  }
+
+  // state
+  initListeners(setConnState) {
+    this.loadQueueFromStorage();
+
+    window.addEventListener('online', () => {
+      setConnState('online');
+      this.pushToServer();
+    });
+    window.addEventListener('offline', () => setConnState('offline'));
+
+  }
+
+  getState() {
+    return window.navigator.onLine ? 'online' : 'offline';
+  }
+
+  saveQueueToStorage() {
+    localStorage.setItem('offlineQueue', JSON.stringify(this.offlineQueue));
+  }
+
+  loadQueueFromStorage() {
+    const storedQueue = localStorage.getItem('offlineQueue');
+    this.offlineQueue = storedQueue ? JSON.parse(storedQueue) : [];
+  }
+
+  async pushToServer() {
+    if (this.getState() != 'online' || this.offlineQueue.length == 0) return;
+    
+    const queueCopy = [...this.offlineQueue];
+    this.offlineQueue = [];
+    this.saveQueueToStorage();
+
+    for (const { action, data } of queueCopy) {
+      try {
+        if (action === 'create') {
+          const { name, dateVisited, rating } = data;
+          await this.create(name, dateVisited, rating);
+          console.log(`Synced create for ${name}`);
+        } else if (action === 'update') {
+          const { id, name, dateVisited, rating } = data;
+          await this.update(id, name, dateVisited, rating);
+          console.log(`Synced update for ${id}`);
+        }
+      } catch (error) {
+        // console.error(`Failed to sync ${action} for ${data.name}:`, error.message);
+        // this.offlineQueue.push({ action, data });
+      }
+    }
+    this.saveQueueToStorage();
   }
 
   // CRUD Operations
@@ -23,12 +75,20 @@ class Service {
   }
 
   async create(name, dateVisited, rating) {
-    try {
-      const response = await axios.post(REST_API_BASE_URL, { name, dateVisited, rating });
-      return response.data;
-    } catch (error) {
-      console.error('Error creating location:', error.message);
-      throw error;
+    if (this.getState() == 'online') {
+      try {
+        const response = await axios.post(REST_API_BASE_URL, { name, dateVisited, rating });
+        return response.data;
+      } catch (error) {
+        console.error('Error creating location:', error.message);
+        throw error;
+      }
+    }
+    else {
+      const location = {name, dateVisited, rating};
+      this.offlineQueue.push({action: 'create', data: location});
+      this.saveQueueToStorage();
+      return location;
     }
   }
 
@@ -43,12 +103,21 @@ class Service {
   }
 
   async update(id, name, dateVisited, rating) {
-    try {
-      const response = await axios.put(`${REST_API_BASE_URL}/${id}`, { name, dateVisited, rating });
-      return response.data;
-    } catch (error) {
-      console.error('Error updating location:', error.message);
-      throw null;
+    if (this.getState() == 'online')
+    {
+      try {
+        const response = await axios.put(`${REST_API_BASE_URL}/${id}`, { name, dateVisited, rating });
+        return response.data;
+      } catch (error) {
+        console.error('Error updating location:', error.message);
+        throw null;
+      }
+    }
+    else {
+      const location = {id, name, dateVisited, rating};
+      this.offlineQueue.push({action: 'update', data: location});
+      this.saveQueueToStorage();
+      return location;
     }
   }
 
