@@ -68,6 +68,7 @@ class Service {
 
   // CRUD Operations
   async getAll(searchTerm = '', ratings = []) {
+    //if (this.offlineQueue.length != 0) return this.offlineCopy;
     try {
       const params = new URLSearchParams();
 
