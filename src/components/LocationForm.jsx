@@ -48,7 +48,7 @@ const LocationForm = ({ submitHandler, newLocation, setNewLocation, setCurrentPa
             <input
               type="text"
               name="name"
-              placeholder="Name"
+              placeholder={newLocation.name == "" ? "Name" : newLocation.name}
               value={safeNewLocation.name}
               onChange={handleInputChange}
               disabled={isSubmitting}

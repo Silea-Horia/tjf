@@ -55,6 +55,10 @@ class Service {
           const { id, name, dateVisited, rating } = data;
           await this.update(id, name, dateVisited, rating);
           console.log(`Synced update for ${id}`);
+        } else if (action == 'delete') {
+          const id = data;
+          await this.delete(id);
+          console.log(`Synced delete for ${id}`);
         }
       } catch (error) {
       }
@@ -86,7 +90,7 @@ class Service {
       this.setConnState('serverDown');
       this.serverDown = true;
 
-      return []; // adauga aici copia offline a entry-urilor
+      return this.offlineCopy; // adauga aici copia offline a entry-urilor
     }
   }
 
@@ -104,17 +108,24 @@ class Service {
       const location = {name, dateVisited, rating};
       this.offlineQueue.push({action: 'create', data: location});
       this.saveQueueToStorage();
+      let id = this.offlineCopy.length;
+      this.offlineCopy.push({id: id, ...location});
       return location;
     }
   }
 
   async read(id) {
-    try {
-      const response = await axios.get(`${REST_API_BASE_URL}/${id}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error reading location:', error.message);
-      return null;
+    if (this.getState() == 'online') {
+      try {
+        const response = await axios.get(`${REST_API_BASE_URL}/${id}`);
+        return response.data;
+      } catch (error) {
+        console.error('Error reading location:', error.message);
+        return null;
+      }
+    } else {
+      const foundLocation = this.offlineCopy.find(location => location.id == id) || null;
+      return foundLocation;
     }
   }
 
@@ -133,17 +144,25 @@ class Service {
       const location = {id, name, dateVisited, rating};
       this.offlineQueue.push({action: 'update', data: location});
       this.saveQueueToStorage();
+      this.offlineCopy.map((elem) => {if(elem.id == location.id) {elem.name = location.name; elem.dateVisited = location.dateVisited; elem.rating = location.rating;}});
       return location;
     }
   }
 
   async delete(id) {
-    try {
-      await axios.delete(`${REST_API_BASE_URL}/${id}`);
-      return true;
-    } catch (error) {
-      console.error('Error deleting location:', error.message);
-      return false;
+    if (this.getState() == 'online') {
+      try {
+        await axios.delete(`${REST_API_BASE_URL}/${id}`);
+        return true;
+      } catch (error) {
+        console.error('Error deleting location:', error.message);
+        return false;
+      }
+    } else {
+      this.offlineQueue.push({action: 'delete', data: id});
+      this.saveQueueToStorage();
+      this.offlineCopy = this.offlineCopy.filter(location => location.id != id);
+      return true; 
     }
   }
 
