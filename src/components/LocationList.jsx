@@ -1,4 +1,5 @@
 import React from 'react'
+import LocationCard from './LocationCard';
 const LocationList = ({locations, allLocations, selectedLocationIds, setSelectedLocationIds, currentListPage, itemsPerPage}) => {
     const handleLocationChange = (location) => {
         setSelectedLocationIds((prevLocations) =>
@@ -35,20 +36,13 @@ const LocationList = ({locations, allLocations, selectedLocationIds, setSelected
             </thead>
             <tbody>
                 {locations.map((location, index) => (
-                    <tr key={location.id}
-                    style={{ backgroundColor: getRowColor(index) }}
-                    >
-                        <td>
-                            <input
-                                type="checkbox"
-                                onChange={() => handleLocationChange(location)}
-                                checked={selectedLocationIds.includes(location.id)}
-                            />
-                        </td>
-                        <td>{location.name}</td>
-                        <td>{location.dateVisited}</td>
-                        <td>{location.rating}</td>
-                    </tr>
+                    <LocationCard
+                        key={location.id}
+                        location={location}
+                        backgroundColor={getRowColor(index)}
+                        handleLocationChange={handleLocationChange}
+                        selectedLocationIds={selectedLocationIds}
+                    />
                 ))}
             </tbody>
         </table>
