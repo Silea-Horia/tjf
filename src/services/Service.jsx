@@ -7,6 +7,9 @@ class Service {
     this.isRunning = false;
     this.insertionInterval = null;
     this.offlineQueue = [];
+    this.offlineCopy = [];
+    this.setConnState = null;
+    this.serverDown = false;
   }
 
   // state
@@ -19,10 +22,11 @@ class Service {
     });
     window.addEventListener('offline', () => setConnState('offline'));
 
+    this.setConnState = setConnState;
   }
 
   getState() {
-    return window.navigator.onLine ? 'online' : 'offline';
+    return this.serverDown ? 'server down' : (window.navigator.onLine ? 'online' : 'offline');
   }
 
   saveQueueToStorage() {
@@ -53,8 +57,6 @@ class Service {
           console.log(`Synced update for ${id}`);
         }
       } catch (error) {
-        // console.error(`Failed to sync ${action} for ${data.name}:`, error.message);
-        // this.offlineQueue.push({ action, data });
       }
     }
     this.saveQueueToStorage();
@@ -64,13 +66,27 @@ class Service {
   async getAll(searchTerm = '', ratings = []) {
     try {
       const params = new URLSearchParams();
+
       if (searchTerm) params.append('name', searchTerm);
+
       ratings.forEach(rating => params.append('ratings', rating));
+
       const response = await axios.get(`${REST_API_BASE_URL}?${params.toString()}`);
+
+      this.serverDown = false;
+      this.setConnState(this.getState());
+      this.pushToServer();
+
+      this.offlineCopy = response.data;
+
       return response.data;
     } catch (error) {
       console.error('Error fetching locations:', error.message, error.response?.data);
-      throw error;
+
+      this.setConnState('serverDown');
+      this.serverDown = true;
+
+      return []; // adauga aici copia offline a entry-urilor
     }
   }
 

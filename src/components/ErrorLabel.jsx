@@ -12,9 +12,12 @@ const ErrorLabel = ({connState}) => {
     const offlineStyle = {
         color: 'yellow',
     };
+    const serverDownStyle = {
+        color: 'red',
+    };
 
   return (
-    <p id='error-label' style={connState == 'online' ? onlineStyle : offlineStyle}>{connState}</p>
+    <p id='error-label' style={connState == 'online' ? onlineStyle : (connState == 'offline' ? offlineStyle : serverDownStyle)}>{connState}</p>
   )
 }
 
