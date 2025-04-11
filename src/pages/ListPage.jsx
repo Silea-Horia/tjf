@@ -1,3 +1,4 @@
+// pages/ListPage.js
 import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import Master from '../components/Master';
@@ -16,7 +17,7 @@ const ListPage = ({ locations, serv, fetchLocations, searchTerm, setSearchTerm, 
       <Master
         serv={serv}
         data={locations}
-        setData={fetchLocations}
+        setData={fetchLocations} // Now used for infinite scroll
         searchTerm={searchTerm}
         selectedRatings={selectedRatings}
         selectedLocationIds={selectedLocationIds}

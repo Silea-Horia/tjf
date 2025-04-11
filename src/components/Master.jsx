@@ -1,10 +1,9 @@
+// components/Master.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LocationList from './LocationList';
-import PaginationControls from './PaginationControls';
 import ActionButtons from './ActionButtons';
 import RatingPieChart from './RatingPieChart';
-import { PIE_CHART_CONFIG } from './constants.js';
 
 const Master = ({
   serv,
@@ -15,16 +14,8 @@ const Master = ({
   selectedLocationIds,
   setSelectedLocationIds,
 }) => {
-  const [currentListPage, setCurrentListPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [isInserting, setIsInserting] = useState(false);
   const navigate = useNavigate();
-
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  const paginatedLocations = data.slice(
-    (currentListPage - 1) * itemsPerPage,
-    currentListPage * itemsPerPage
-  );
 
   const handleToggleInsertions = () => {
     if (isInserting) serv.stopRandomInsertions();
@@ -34,11 +25,8 @@ const Master = ({
 
   const handleRemove = async () => {
     for (const id of selectedLocationIds) await serv.delete(id);
-    setData();
+    setData(); // Refresh data
     setSelectedLocationIds([]);
-    if ((currentListPage - 1) * itemsPerPage >= data.length && currentListPage > 1) {
-      setCurrentListPage(currentListPage - 1);
-    }
   };
 
   const handleUpdateClick = async () => {
@@ -50,12 +38,12 @@ const Master = ({
   return (
     <div className="main-content">
       <LocationList
-        locations={paginatedLocations}
         allLocations={data}
         selectedLocationIds={selectedLocationIds}
         setSelectedLocationIds={setSelectedLocationIds}
-        currentListPage={currentListPage}
-        itemsPerPage={itemsPerPage}
+        fetchLocations={setData} // Pass fetchLocations for infinite scroll
+        searchTerm={searchTerm}
+        selectedRatings={selectedRatings}
       />
       <RatingPieChart data={data} />
       <ActionButtons
@@ -66,13 +54,6 @@ const Master = ({
         isInserting={isInserting}
         isDeleteDisabled={selectedLocationIds.length < 1}
         isUpdateDisabled={selectedLocationIds.length !== 1}
-      />
-      <PaginationControls
-        currentPage={currentListPage}
-        totalPages={totalPages}
-        itemsPerPage={itemsPerPage}
-        setItemsPerPage={setItemsPerPage}
-        setCurrentPage={setCurrentListPage}
       />
     </div>
   );

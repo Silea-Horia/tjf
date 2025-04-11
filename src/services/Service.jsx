@@ -67,33 +67,38 @@ class Service {
   }
 
   // CRUD Operations
-  async getAll(searchTerm = '', ratings = []) {
+  async getAll(searchTerm = '', ratings = [], page = null) {
     if (this.getState() === 'offline') {
       return this.offlineCopy;
     }
-    
+  
     try {
       const params = new URLSearchParams();
-
+  
       if (searchTerm) params.append('name', searchTerm);
-
       ratings.forEach(rating => params.append('ratings', rating));
-
+      if (page !== null) params.append('page', page); // Add page parameter
+  
       const response = await axios.get(`${REST_API_BASE_URL}?${params.toString()}`);
-
+  
       this.serverDown = false;
       this.setConnState(this.getState());
       this.pushToServer();
-
-      this.offlineCopy = response.data;
-
+  
+      // If online, update offlineCopy with paginated data (append, not replace)
+      if (page === 1) {
+        this.offlineCopy = response.data; // Reset on first page
+      } else {
+        this.offlineCopy = [...this.offlineCopy, ...response.data]; // Append subsequent pages
+      }
+  
       return response.data;
     } catch (error) {
       console.error('Error fetching locations:', error.message, error.response?.data);
-
+  
       this.setConnState('serverDown');
       this.serverDown = true;
-
+  
       return this.offlineCopy;
     }
   }

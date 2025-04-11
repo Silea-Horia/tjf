@@ -1,28 +1,22 @@
 import { useState, useEffect } from 'react';
 
-const useLocations = (service, searchTerm = '', ratings = []) => {
+const useLocations = (serv, searchTerm, selectedRatings) => {
   const [locations, setLocations] = useState([]);
   const [error, setError] = useState(null);
 
-  const fetchLocations = async () => {
+  const fetchLocations = async (page = 1, append = false) => {
     try {
-      const data = await service.getAll(searchTerm, ratings);
-      setLocations(data);
+      const data = await serv.getAll(searchTerm, selectedRatings, page);
+      setLocations(prev => (append ? [...prev, ...data] : data));
+      setError(null);
     } catch (err) {
       setError('Failed to fetch locations');
-      console.error('Error fetching locations:', err);
-      setLocations(serv.offlineCopy || []);
     }
   };
 
   useEffect(() => {
-    fetchLocations();
-    const interval = setInterval(fetchLocations, 5000);
-    return () => {
-      service.stopRandomInsertions();
-      clearInterval(interval);
-    };
-  }, [service, searchTerm, ratings]);
+    fetchLocations(1); // Fetch first page on mount or filter change
+  }, [searchTerm, selectedRatings]);
 
   return { locations, error, setError, fetchLocations };
 };
