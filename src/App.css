@@ -114,3 +114,19 @@ tr, td {
   padding: 0px;
   margin: 1px;
 }
+
+#scrollableDiv {
+  height: 30vh;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.main-content {
+  overflow: visible;
+  height: 90vh;
+}
