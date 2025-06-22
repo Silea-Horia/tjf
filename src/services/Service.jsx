@@ -1,4 +1,5 @@
 import axios from "axios";
+import { faker } from '@faker-js/faker';
 
 const REST_API_BASE_URL = 'http://localhost:8080/api/locations';
 
@@ -13,6 +14,14 @@ class Service {
         this.loadQueueFromStorage();
         this.loadOfflineCopyFromStorage();
         this.startServerCheck();
+        //this.createFakes();
+    }
+
+    createFakes() {
+        let name = faker.location.city();
+        let dateVisited = faker.date.past();
+        let rating = faker.number.int(0, 5);
+        this.create(name, dateVisited, rating);
     }
 
     // State Management
